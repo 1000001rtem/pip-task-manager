@@ -1,15 +1,17 @@
-import user
-import project
-import auth
+from auth import AuthService
 from command.command_repository import CommandRepository
+from project.project_repository import ProjectRepository
+from task.task_repository import TaskRepository
+from user import UserRepository
 
 
 class CommandService:
     def __init__(self):
-        user_repository = user.user_repository.UserRepository()
-        auth_service = auth.AuthService(user_repository)
-        project_repository = project.project_repository.ProjectRepository()
-        self.commands = CommandRepository(auth_service, project_repository).get_commands()
+        user_repository = UserRepository()
+        auth_service = AuthService(user_repository)
+        project_repository = ProjectRepository()
+        task_repository = TaskRepository()
+        self.commands = CommandRepository(auth_service, project_repository, task_repository).get_commands()
 
     def get_command(self, name):
         return self.commands.get(name)

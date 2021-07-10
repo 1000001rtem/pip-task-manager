@@ -2,10 +2,11 @@ from command import command
 
 
 class CommandRepository:
-    def __init__(self, auth_repository, project_repository):
+    def __init__(self, auth_repository, project_repository, task_repository):
         self.commands = {}
         auth_service = auth_repository
         project_repository = project_repository
+        task_repository = task_repository
 
         # service commands
         help_command = command.Command(
@@ -82,9 +83,52 @@ class CommandRepository:
             command_name="delete_project",
             description="Delete project by ID",
             secure=True,
+            # todo: удаление тасков
             action=(lambda: project_repository.delete_project(auth_service.current_user.id, input("Please write ID: ")))
         )
         self.commands[delete_project_command.command_name] = delete_project_command
+
+        # task commands
+        find_task_by_project_command = command.Command(
+            command_name="task_by_project",
+            description="Prints all task in project",
+            secure=True,
+            action=(lambda: print(
+                '\n'.join(str(p) for p in task_repository.find_all_by_project(
+                    auth_service.current_user.id,
+                    input("Please write Project ID: ")
+                ))))
+        )
+        self.commands[find_task_by_project_command.command_name] = find_task_by_project_command
+
+        find_task_command = command.Command(
+            command_name="find_task",
+            description="Find task by ID",
+            secure=True,
+            action=(lambda: print(
+                task_repository.find_task(auth_service.current_user.id, input("Please write ID: "))))
+        )
+        self.commands[find_task_command.command_name] = find_task_command
+
+        create_task_command = command.Command(
+            command_name="create_task",
+            description="Create new task",
+            secure=True,
+            action=(lambda: task_repository.add_task(
+                input("Please enter name: "),
+                auth_service.current_user.id,
+                input("Please enter project ID: ")
+            ))
+        )
+        self.commands[create_task_command.command_name] = create_task_command
+
+        delete_task_command = command.Command(
+            command_name="delete_task",
+            description="Delete task by ID",
+            secure=True,
+            action=(lambda: task_repository.delete_task(auth_service.current_user.id, input("Please write ID: ")))
+        )
+        self.commands[delete_task_command.command_name] = delete_task_command
 
     def get_commands(self):
         return self.commands

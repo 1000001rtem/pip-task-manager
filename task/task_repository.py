@@ -12,7 +12,7 @@ class TaskRepository:
         self.tasks[user_id] = user_store
 
     def find_all_by_project(self, user_id, project_id):
-        return filter(lambda t: t.poject_id == project_id, self.tasks.get(user_id) or {})
+        return filter(lambda t: t.project_id == project_id, (self.tasks.get(user_id) or {}).values())
 
     def find_task(self, user_id, task_id):
         user_tasks = self.tasks.get(user_id)
